@@ -596,7 +596,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.49208, y: -1.63, z: 0.1}
-  m_LocalScale: {x: 15.805, y: 1, z: 14.938}
+  m_LocalScale: {x: 29.108068, y: 1, z: 27.862358}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1223,7 +1223,7 @@ Transform:
   m_GameObject: {fileID: 992872294474969691}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.377, y: -0.13034, z: 2.4091}
+  m_LocalPosition: {x: 9.6973, y: -0.13034, z: 9.5425}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2188,7 +2188,7 @@ GameObject:
   - component: {fileID: 992872294474969695}
   m_Layer: 0
   m_Name: AlienA
-  m_TagString: Untagged
+  m_TagString: Concrete
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2297,6 +2297,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3cf4f1e52bef047bbdc083a1117b07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Alien
+  health: 100
+  attackRadius: 0.5
 --- !u!4 &1011043397079364325
 Transform:
   m_ObjectHideFlags: 0
@@ -4772,6 +4774,7 @@ GameObject:
   - component: {fileID: 4190955789745857027}
   - component: {fileID: 601192530942695099}
   - component: {fileID: 7999892636464463708}
+  - component: {fileID: 8163229474854977415}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -8803,7 +8806,7 @@ GameObject:
   - component: {fileID: 6404381673286599325}
   m_Layer: 0
   m_Name: AlienC
-  m_TagString: Untagged
+  m_TagString: Concrete
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9318,7 +9321,7 @@ Transform:
   m_GameObject: {fileID: 6028982481132541987}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.6701, y: -0.13034, z: 4.5616}
+  m_LocalPosition: {x: 7.9904003, y: -0.13034, z: 11.695}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9430,6 +9433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3cf4f1e52bef047bbdc083a1117b07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Alien
+  health: 100
+  attackRadius: 0.5
 --- !u!20 &6408767158450918428
 Camera:
   m_ObjectHideFlags: 0
@@ -10476,7 +10481,7 @@ Transform:
   m_GameObject: {fileID: 7803411478308688681}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5697, y: -0.13034, z: 3.3366}
+  m_LocalPosition: {x: 5.89, y: -0.13034, z: 10.47}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10993,7 +10998,7 @@ GameObject:
   - component: {fileID: 7803411478308688685}
   m_Layer: 0
   m_Name: AlienB
-  m_TagString: Untagged
+  m_TagString: Concrete
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11102,6 +11107,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3cf4f1e52bef047bbdc083a1117b07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Alien
+  health: 100
+  attackRadius: 0.5
 --- !u!1 &7810585719390103731
 GameObject:
   m_ObjectHideFlags: 0
@@ -11547,6 +11554,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasPrefab: {fileID: 5393623835024644669, guid: 48d7771c50bd625489d38055025597a3,
     type: 3}
+--- !u!114 &8163229474854977415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2751027688261351798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eeeea23083a78848988bc032efdcf68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
 --- !u!4 &8171929868493001301
 Transform:
   m_ObjectHideFlags: 0

@@ -3,24 +3,90 @@ using UnityEngine.AI;
 
 public class Alien : MonoBehaviour
 {
+    public float health = 100;
+
+    [Header("Movement & Pathfinding")]
     private NavMeshAgent navMeshAgent;
     private GameObject player;
+    private PlayerManager playerManager;
+
+    [Header("Attack Settings")]
+    [Tooltip("The distance threshold within which the alien will bite the player.")]
+    public float attackRadius = 2.0f;
+
+    private Animator animator;
+    private bool isBiting = false;
+
     void Start()
     {
         player = GameObject.FindWithTag("Player");
         navMeshAgent = GetComponent<NavMeshAgent>();
+        playerManager = player.GetComponent<PlayerManager>();
+
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
-        if (player != null)
+        if (player == null)
         {
-            navMeshAgent.SetDestination(player.transform.position);
-            Debug.Log("Chasing player at: " + player.transform.position);
+            Debug.LogError("Alien cannot find a GameObject with the tag 'Player'!");
+            return;
+        }
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+        if (distanceToPlayer <= attackRadius)
+        {
+            navMeshAgent.isStopped = true;
+
+            if (!isBiting)
+            {
+                TriggerBite();
+            }
         }
         else
         {
-            Debug.LogError("Alien cannot find a GameObject with the tag 'Player'!");
+            navMeshAgent.isStopped = false;
+            navMeshAgent.SetDestination(player.transform.position);
+            isBiting = false; 
         }
     }
+
+    void TriggerBite()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Bite");
+            isBiting = true;
+            playerManager.StopMovement();
+            Invoke("triggerPlayerDeath", 2f);   
+        }
+    }
+
+    void triggerPlayerDeath()
+    {
+        playerManager.Die();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRadius);
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
+
+    public void TakeDamage(float amount)
+    {
+        health -= amount;
+        if(health <= 0)
+        {
+            Die();
+        }
+    }
+
 }
