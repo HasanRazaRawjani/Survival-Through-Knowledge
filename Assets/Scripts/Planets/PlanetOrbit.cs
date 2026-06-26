@@ -23,10 +23,8 @@ public class PlanetOrbit : MonoBehaviour
     {
         if (sunTarget == null) return;
 
-        
         float speed = (360f / orbitalPeriodInDays) * timeScaleMultiplier;
 
-        
-        transform.RotateAround(sunTarget.position, Vector3.up, speed * Time.deltaTime);
+        transform.RotateAround(sunTarget.position, Vector3.down, speed * Time.deltaTime);
     }
 }
