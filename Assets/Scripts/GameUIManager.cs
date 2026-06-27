@@ -7,24 +7,7 @@ using TMPro;
 
 public class GameUIManager : MonoBehaviour
 {
-    public GameObject QuestionScreen;
-    public Slider killsSlider;
-    public TextMeshProUGUI QuestionText;
-
-    [Header("Player Settings")]
-    [Tooltip("Drag your Player object or FPS Controller script component here")]
-    public MonoBehaviour fpsControllerScript;
-
-    [Header("Lerp Settings")]
-    public float lerpSpeed = 5f;
-
-    [Header("Local AI Settings")]
-    public string localModelName = "llama3";
-    private string localOllamaUrl = "http://localhost:11434/api/generate";
-
-    private int kills = 0;
-    private bool currentCorrectAnswer;
-    private bool awaitingAIResponse = false;
+    public static GameUIManager Instance { get; private set; }
 
     [System.Serializable]
     public class TriviaQuestion
@@ -48,16 +31,81 @@ public class GameUIManager : MonoBehaviour
         public string response;
     }
 
+    [Header("Endgame Scenes")]
+    public GameObject WinScene;
+    public GameObject DeathScene;
+
+    [Header("Main HUD Panels to Hide")]
+    [Tooltip("Drag the Kill_Slider parent object here")]
+    public GameObject killSliderPanel;
+    [Tooltip("Drag the ProgressSlider parent object here")]
+    public GameObject progressSliderPanel;
+    [Tooltip("Drag the Crosshair game object here")]
+    public GameObject crosshairObject;
+
+    [Header("AI Question Screen UI")]
+    public GameObject QuestionScreen;
+    public Slider killsSlider;
+    public TextMeshProUGUI QuestionText;
+    public Slider progressSlider;
+
+    [Header("Player Settings")]
+    [Tooltip("Drag your Player object or FPS Controller script component here")]
+    public MonoBehaviour fpsControllerScript;
+
+    [Header("Lerp Settings")]
+    public float lerpSpeed = 5f;
+
+    [Header("Local AI Settings")]
+    public string localModelName = "qwen2.5:1.5b";
+    private string localOllamaUrl = "http://localhost:11434/api/generate";
+
+    private int kills = 0;
+    private int currentPoints = 0;
+    private const int maxPoints = 10;
+    private bool currentCorrectAnswer;
+    private bool awaitingAIResponse = false;
+    private bool gameHasEnded = false;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
         killsSlider.value = 0f;
         QuestionScreen.SetActive(false);
+
+        if (progressSlider != null)
+        {
+            progressSlider.minValue = 0f;
+            progressSlider.maxValue = maxPoints;
+            progressSlider.value = 0f;
+        }
+
+        if (WinScene != null) WinScene.SetActive(false);
+        if (DeathScene != null) DeathScene.SetActive(false);
     }
 
     void Update()
     {
-        float targetValue = (float)kills / 3f;
-        killsSlider.value = Mathf.Lerp(killsSlider.value, targetValue, Time.deltaTime * lerpSpeed);
+        if (gameHasEnded) return;
+
+        float targetKillsValue = (float)kills / 3f;
+        killsSlider.value = Mathf.Lerp(killsSlider.value, targetKillsValue, Time.deltaTime * lerpSpeed);
+
+        if (progressSlider != null)
+        {
+            progressSlider.value = Mathf.Lerp(progressSlider.value, currentPoints, Time.deltaTime * lerpSpeed);
+        }
 
         if (kills >= 3 && killsSlider.value >= 0.99f && !awaitingAIResponse)
         {
@@ -69,6 +117,7 @@ public class GameUIManager : MonoBehaviour
 
     public void AddKill()
     {
+        if (gameHasEnded) return;
         kills++;
     }
 
@@ -95,9 +144,11 @@ public class GameUIManager : MonoBehaviour
         awaitingAIResponse = true;
         QuestionText.text = "Generating question via local AI...";
 
-        string systemPrompt = $"Generate one unique, accurate True or False trivia question about the planet {planet}. " +
-                             "The question must be basic knowledge. You must respond ONLY using this raw JSON structure: " +
-                             "{\"question\": \"Your question here\", \"answer\": true} or {\"question\": \"Your question here\", \"answer\": false}. " +
+        string systemPrompt = $"You are a trivia generator. Generate one unique, accurate True or False factual statement about the planet {planet}. " +
+                             "CRITICAL: Do NOT write a question. Do NOT use a question mark. It must be a direct statement that can be answered with True or False. " +
+                             "Example of an acceptable statement: \"Uranus is the 8th planet from the Sun.\" " +
+                             "You must respond ONLY using this raw JSON structure: " +
+                             "{\"question\": \"Your factual statement here\", \"answer\": true} or {\"question\": \"Your factual statement here\", \"answer\": false}. " +
                              "Do not include any introductory remarks, markdown formatting, or trailing text.";
 
         OllamaRequestData requestBody = new OllamaRequestData
@@ -138,6 +189,8 @@ public class GameUIManager : MonoBehaviour
 
     private void ResumeGame()
     {
+        if (gameHasEnded) return;
+
         Time.timeScale = 1;
         AudioListener.pause = false;
 
@@ -165,12 +218,99 @@ public class GameUIManager : MonoBehaviour
     {
         if (playerChoice == currentCorrectAnswer)
         {
-            Debug.Log("Correct Answer!");
+            currentPoints += 2;
         }
         else
         {
-            Debug.Log("Wrong Answer!");
+            currentPoints -= 1;
         }
-        ResumeGame();
+
+        currentPoints = Mathf.Clamp(currentPoints, 0, maxPoints);
+
+        if (currentPoints >= maxPoints)
+        {
+            TriggerWin();
+        }
+        else
+        {
+            ResumeGame();
+        }
     }
+
+    private void HideAllOtherUI()
+    {
+        if (killSliderPanel != null) killSliderPanel.SetActive(false);
+        if (progressSliderPanel != null) progressSliderPanel.SetActive(false);
+        if (crosshairObject != null) crosshairObject.SetActive(false);
+
+        Canvas myCanvas = GetComponent<Canvas>();
+        if (myCanvas == null)
+        {
+            myCanvas = GetComponentInParent<Canvas>();
+        }
+
+        Canvas[] allCanvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+        foreach (Canvas canvas in allCanvases)
+        {
+            if (canvas != myCanvas)
+            {
+                canvas.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void TriggerWin()
+    {
+        gameHasEnded = true;
+        QuestionScreen.SetActive(false);
+        HideAllOtherUI();
+
+        Time.timeScale = 0;
+        AudioListener.pause = true;
+
+        if (fpsControllerScript != null)
+        {
+            fpsControllerScript.enabled = false;
+        }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (WinScene != null)
+        {
+            WinScene.SetActive(true);
+        }
+    }
+
+    public void TriggerPlayerDeath()
+    {
+        if (gameHasEnded) return;
+        gameHasEnded = true;
+        QuestionScreen.SetActive(false);
+        HideAllOtherUI();
+
+        Time.timeScale = 0;
+        AudioListener.pause = true;
+
+        if (fpsControllerScript != null)
+        {
+            fpsControllerScript.enabled = false;
+        }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (DeathScene != null)
+        {
+            DeathScene.SetActive(true);
+        }
+    }
+
+    public void LoadSelectScene()
+    {
+        Time.timeScale = 1;
+        AudioListener.pause = false;
+        SceneManager.LoadScene("SelectScene");
+    }
+
 }

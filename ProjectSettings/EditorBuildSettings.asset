@@ -6,14 +6,23 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GameScene.unity
-    guid: 12c4e885e65b57d4bb17f552818271e9
+    path: Assets/Scenes/SelectScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/Solar System.unity
     guid: b0e4f1f41284e234c92f21b78354f609
   - enabled: 1
+    path: Assets/Scenes/Mercury Terrain.unity
+    guid: aa6ed6d2176fadd4c9b7964ccda60708
+  - enabled: 1
     path: Assets/Scenes/Earth Terrain.unity
     guid: 8546a1b3a56d05d46bed659cbcede937
+  - enabled: 1
+    path: Assets/Scenes/Mars Terrain.unity
+    guid: dadde7fd397d4354f9fed0bfeaab9551
+  - enabled: 1
+    path: Assets/Scenes/Jupiter Terrain.unity
+    guid: b4751de120fa2784b968cc4f22814939
   - enabled: 1
     path: Assets/Scenes/Uranus Terrain.unity
     guid: 89a820ba874076c4ba73fe28b9afd038

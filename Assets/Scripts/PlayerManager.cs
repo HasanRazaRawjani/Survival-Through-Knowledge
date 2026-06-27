@@ -92,7 +92,14 @@ public class PlayerManager : MonoBehaviour
 
     public void Die()
     {
-        Destroy(gameObject);
+        FindFirstObjectByType<GameUIManager>().TriggerPlayerDeath();
+
+        if (GetComponent<Collider>() != null) GetComponent<Collider>().enabled = false;
+
+        foreach (MeshRenderer r in GetComponentsInChildren<MeshRenderer>()) r.enabled = false;
+        foreach (SkinnedMeshRenderer smr in GetComponentsInChildren<SkinnedMeshRenderer>()) smr.enabled = false;
+
+        this.enabled = false;
     }
 
     public void StopMovement()

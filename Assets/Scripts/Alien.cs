@@ -11,19 +11,17 @@ public class Alien : MonoBehaviour
     private PlayerManager playerManager;
 
     [Header("Attack Settings")]
-    [Tooltip("The distance threshold within which the alien will bite the player.")]
     public float attackRadius = 2.0f;
 
     private Animator animator;
     private bool isBiting = false;
     private bool isDead = false;
-    private GameUIManager gameUIManager;
 
     void Start()
     {
         player = GameObject.FindWithTag("Player");
         navMeshAgent = GetComponent<NavMeshAgent>();
-        gameUIManager = player.transform.Find("GameUI").GetComponent<GameUIManager>();
+
         if (player != null)
         {
             playerManager = player.GetComponent<PlayerManager>();
@@ -34,8 +32,7 @@ public class Alien : MonoBehaviour
 
     void Update()
     {
-        
-        if (isDead) return;
+        if (isDead || navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh) return;
 
         if (player == null)
         {
@@ -93,7 +90,7 @@ public class Alien : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        if (isDead) return; 
+        if (isDead) return;
 
         health -= amount;
         if (health <= 0)
@@ -108,12 +105,12 @@ public class Alien : MonoBehaviour
 
         isDead = true;
 
-        if (playerManager != null)
+        if (GameUIManager.Instance != null)
         {
-            gameUIManager.AddKill();
+            GameUIManager.Instance.AddKill();
         }
 
-        if (navMeshAgent != null)
+        if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
         {
             navMeshAgent.isStopped = true;
             navMeshAgent.enabled = false;
