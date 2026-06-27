@@ -735,7 +735,7 @@ MonoBehaviour:
   progressSlider: {fileID: 604426009852933839}
   fpsControllerScript: {fileID: 0}
   lerpSpeed: 5
-  localModelName: qwen2.5:1.5b
+  localModelName: llama3.2
 --- !u!114 &5413051678751372731
 MonoBehaviour:
   m_ObjectHideFlags: 0
