@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using System.Collections; 
+using System.Collections;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -14,6 +14,9 @@ public class PlayerManager : MonoBehaviour
 
     private Coroutine injuryRoutine;
 
+    [Header("Audio")]
+    public AudioSource playerDieAudioSource;
+
     void Start()
     {
         postProcessing = GameObject.Find("Global Volume").GetComponent<Volume>();
@@ -23,7 +26,6 @@ public class PlayerManager : MonoBehaviour
         if (postProcessing.profile.TryGet<Vignette>(out Vignette activeVignette))
         {
             vignette = activeVignette;
-
             vignette.color.Override(Color.black);
             vignette.intensity.Override(0.5f);
         }
@@ -40,13 +42,11 @@ public class PlayerManager : MonoBehaviour
 
     public void SpawnBlood()
     {
-        
         if (injuryRoutine != null)
         {
             StopCoroutine(injuryRoutine);
         }
 
-       
         injuryRoutine = StartCoroutine(RedFlashRoutine());
 
         GameObject newBlood = Instantiate(bloodPrefab);
@@ -58,14 +58,11 @@ public class PlayerManager : MonoBehaviour
     {
         if (vignette != null)
         {
-            
             vignette.color.Override(Color.red);
-            vignette.intensity.Override(0.65f); 
+            vignette.intensity.Override(0.65f);
 
-           
             yield return new WaitForSeconds(1.0f);
 
-           
             float elapsedTime = 0f;
             float fadeDuration = 0.5f;
 
@@ -77,14 +74,12 @@ public class PlayerManager : MonoBehaviour
                 elapsedTime += Time.deltaTime;
                 float lerpPercent = elapsedTime / fadeDuration;
 
-                
                 vignette.color.Override(Color.Lerp(startColor, Color.black, lerpPercent));
                 vignette.intensity.Override(Mathf.Lerp(startIntensity, 0.5f, lerpPercent));
 
-                yield return null; 
+                yield return null;
             }
 
-            
             vignette.color.Override(Color.black);
             vignette.intensity.Override(0.5f);
         }
@@ -92,7 +87,20 @@ public class PlayerManager : MonoBehaviour
 
     public void Die()
     {
-        FindFirstObjectByType<GameUIManager>().TriggerPlayerDeath();
+        if (playerDieAudioSource != null)
+        {
+            playerDieAudioSource.ignoreListenerPause = true;
+            playerDieAudioSource.Play();
+        }
+
+        if (GameUIManager.Instance != null)
+        {
+            GameUIManager.Instance.TriggerPlayerDeath();
+        }
+        else
+        {
+            FindFirstObjectByType<GameUIManager>().TriggerPlayerDeath();
+        }
 
         if (GetComponent<Collider>() != null) GetComponent<Collider>().enabled = false;
 

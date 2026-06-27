@@ -35,6 +35,12 @@ public class GameUIManager : MonoBehaviour
     public GameObject WinScene;
     public GameObject DeathScene;
 
+    [Header("Endgame Audio Settings")]
+    [Tooltip("Drag your VictorySound AudioSource game object here")]
+    public AudioSource victoryAudioSource;
+    [Tooltip("Drag your LoseSound AudioSource game object here")]
+    public AudioSource loseAudioSource;
+
     [Header("Main HUD Panels to Hide")]
     [Tooltip("Drag the Kill_Slider parent object here")]
     public GameObject killSliderPanel;
@@ -265,6 +271,12 @@ public class GameUIManager : MonoBehaviour
         QuestionScreen.SetActive(false);
         HideAllOtherUI();
 
+        if (victoryAudioSource != null)
+        {
+            victoryAudioSource.ignoreListenerPause = true;
+            victoryAudioSource.Play();
+        }
+
         Time.timeScale = 0;
         AudioListener.pause = true;
 
@@ -289,6 +301,12 @@ public class GameUIManager : MonoBehaviour
         QuestionScreen.SetActive(false);
         HideAllOtherUI();
 
+        if (loseAudioSource != null)
+        {
+            loseAudioSource.ignoreListenerPause = true;
+            loseAudioSource.Play();
+        }
+
         Time.timeScale = 0;
         AudioListener.pause = true;
 
@@ -312,5 +330,4 @@ public class GameUIManager : MonoBehaviour
         AudioListener.pause = false;
         SceneManager.LoadScene("SelectScene");
     }
-
 }

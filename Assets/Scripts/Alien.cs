@@ -13,6 +13,14 @@ public class Alien : MonoBehaviour
     [Header("Attack Settings")]
     public float attackRadius = 2.0f;
 
+    [Header("Alien Audio Settings")]
+    [Tooltip("Drag your RunningSound AudioSource here")]
+    public AudioSource runningAudioSource;
+    [Tooltip("Drag your BitingSound AudioSource here")]
+    public AudioSource bitingAudioSource;
+    [Tooltip("Drag your DyingSound AudioSource here")]
+    public AudioSource dyingAudioSource;
+
     private Animator animator;
     private bool isBiting = false;
     private bool isDead = false;
@@ -28,6 +36,12 @@ public class Alien : MonoBehaviour
         }
 
         animator = GetComponentInChildren<Animator>();
+
+        if (runningAudioSource != null && !runningAudioSource.isPlaying)
+        {
+            runningAudioSource.loop = true;
+            runningAudioSource.Play();
+        }
     }
 
     void Update()
@@ -55,7 +69,13 @@ public class Alien : MonoBehaviour
         {
             navMeshAgent.isStopped = false;
             navMeshAgent.SetDestination(player.transform.position);
-            isBiting = false;
+
+            if (isBiting)
+            {
+                isBiting = false;
+                if (bitingAudioSource != null) bitingAudioSource.Stop();
+                if (runningAudioSource != null && !runningAudioSource.isPlaying) runningAudioSource.Play();
+            }
         }
     }
 
@@ -65,6 +85,10 @@ public class Alien : MonoBehaviour
         {
             animator.SetTrigger("Bite");
             isBiting = true;
+
+            if (runningAudioSource != null) runningAudioSource.Stop();
+            if (bitingAudioSource != null) bitingAudioSource.Play();
+
             if (playerManager != null)
             {
                 playerManager.SpawnBlood();
@@ -104,6 +128,15 @@ public class Alien : MonoBehaviour
         if (isDead) return;
 
         isDead = true;
+
+        if (runningAudioSource != null) runningAudioSource.Stop();
+        if (bitingAudioSource != null) bitingAudioSource.Stop();
+
+        if (dyingAudioSource != null)
+        {
+            dyingAudioSource.ignoreListenerPause = true;
+            dyingAudioSource.Play();
+        }
 
         if (GameUIManager.Instance != null)
         {
