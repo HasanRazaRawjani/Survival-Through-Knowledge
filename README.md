@@ -1,5 +1,1 @@
-<div align="center">
-  <a href="https://youtu.be">
-    <img src="https://youtube.com" alt="Watch the video" width="600">
-  </a>
-</div>
+[![Survival Through Knowledge](https://img.youtube.com/vi/oR0PirN9Nuk/maxresdefault.jpg)](https://www.youtube.com/watch?v=oR0PirN9Nuk)
